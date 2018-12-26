@@ -13,8 +13,18 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(gray)
 
-    blurred = blur(image, kernel=(7, 7), sigma=1)
+    freq = 3
+
+    blurred = blur(image, kernel=(freq*4+1, freq*4+1), sigma=0.5)
     plt.figure()
     plt.imshow(blurred)
+
+    sharp = sharpen(image, rate=0.5, kernel=(freq*4+1, freq*4+1), sigma=0.5)
+    plt.figure()
+    plt.imshow(sharp)
+
+    inverted = invert(image)
+    plt.figure()
+    plt.imshow(inverted)
 
     plt.show()

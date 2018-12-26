@@ -10,24 +10,24 @@ def gray_scale(image):
 
 def blur(image, kernel=(3, 3), sigma=1.):
     g = _gaussian(kernel=kernel, sigma=sigma)
+    # g = gauss2D(shape=kernel, sigma=sigma)
     blur = _filter(image, g)
     return blur
 
 
-# def sharpen(image, a=1, b=1, sigma=1.):
-#     sharp = np.clip(a * image - b * blur, 0, 255)
-#     return sharp
+def sharpen(image, rate=0.5, kernel=(3, 3), sigma=1.):
+    blurred = blur(image, kernel=kernel, sigma=sigma)
+    sharp = np.clip((1+rate)*image - rate*blurred, 0, 255).astype('int')
+    return sharp
+
+
+def invert(image):
+    return 255-image
 
 
 def _filter(image, filter):
     output = np.zeros_like(image)
     h, w, c = image.shape
-    k1, k2 = filter.shape
-    padded = np.pad(image,
-                    ((k1//2, k1//2),
-                     (k2//2, k2//2),
-                     (0, 0)),
-                    mode='symmetric')
     for k in range(c):
         output[:, :, k] = filters.convolve(image[:, :, k], filter)
 
@@ -39,3 +39,18 @@ def _gaussian(kernel=(3, 3), sigma=1.):
                        np.linspace(-(kernel[1]//2), (kernel[1]//2)))
     filter = np.exp(-(x**2+y**2)/(2*sigma**2))
     return filter / filter.sum()
+
+
+def gauss2D(shape=(3, 3), sigma=0.5):
+    """
+    2D gaussian mask - should give the same result as MATLAB's
+    fspecial('gaussian',[shape],[sigma])
+    """
+    m, n = [(ss-1.)/2. for ss in shape]
+    y, x = np.ogrid[-m:m+1, -n:n+1]
+    h = np.exp(-(x*x + y*y) / (2.*sigma*sigma))
+    h[h < np.finfo(h.dtype).eps*h.max()] = 0
+    sumh = h.sum()
+    if sumh != 0:
+        h /= sumh
+    return h
