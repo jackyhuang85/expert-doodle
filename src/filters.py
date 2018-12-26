@@ -25,11 +25,26 @@ def invert(image):
     return 255-image
 
 
+def power(image, rate=0.5):
+    powered = image**rate
+    powered = powered * (255/powered.max())
+    return powered.astype('int')
+
+
+def enhance(image, contrast=0.1, brightness=0):
+    enhanced = np.zeros_like(image)
+    enhanced[:, :, 0] = contrast*(image[:, :, 0]-128) + 128 + brightness
+    enhanced[:, :, 1] = contrast*(image[:, :, 1]-128) + 128 + brightness
+    enhanced[:, :, 2] = contrast*(image[:, :, 2]-128) + 128 + brightness
+    enhanced = np.clip(enhanced, 0, 255).astype('int')
+    return enhanced
+
+
 def _filter(image, filter):
     output = np.zeros_like(image)
-    h, w, c = image.shape
-    for k in range(c):
-        output[:, :, k] = filters.convolve(image[:, :, k], filter)
+    output[:, :, 0] = filters.convolve(image[:, :, 0], filter)
+    output[:, :, 1] = filters.convolve(image[:, :, 1], filter)
+    output[:, :, 2] = filters.convolve(image[:, :, 2], filter)
 
     return output
 

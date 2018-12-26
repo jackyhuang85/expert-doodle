@@ -27,4 +27,12 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(inverted)
 
+    powered = power(image)
+    plt.figure()
+    plt.imshow(powered)
+
+    enhanced = enhance(image, contrast=0.8, brightness=0)
+    plt.figure()
+    plt.imshow(enhanced)
+
     plt.show()
