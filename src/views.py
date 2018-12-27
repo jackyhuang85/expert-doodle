@@ -5,12 +5,8 @@ It includes the config of layout, the appearance of widgets,
 and also assigns event-handler for each widget.
 
 '''
-
-
-import sys
-from PyQt5.QtWidgets import (QMainWindow, QApplication, 
-                             QLabel, QHBoxLayout, QWidget, QGroupBox, 
-                             QVBoxLayout)
+from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout, 
+                             QWidget, QGroupBox, QVBoxLayout)
 from camera import FrameThread
 
 class MainWindow(QMainWindow):
@@ -29,6 +25,9 @@ class MainWindow(QMainWindow):
         self.frame_thread.start()
 
     def init_ui(self):
+        '''
+        Initiate UI components in MainWindow
+        '''
         self.set_window_size_title()
 
         self.create_camera_horizontal_layout()
@@ -43,6 +42,9 @@ class MainWindow(QMainWindow):
         self.content_wid.setLayout(main_layout)
 
     def create_camera_horizontal_layout(self):
+        '''
+        Set up Camera Box-Layout (above)
+        '''
         self.camera_horizontal_group_box = QGroupBox('Camera')
         layout = QHBoxLayout()
         camera_label = QLabel()
@@ -53,10 +55,16 @@ class MainWindow(QMainWindow):
         self.camera_horizontal_group_box.setLayout(layout)
 
     def create_filters_horizontal_layout(self):
+        '''
+        Set up Filter Box-Layout (bottom)
+        '''
         self.filter_horizontal_group_box = QGroupBox('Filters')
 
 
     def set_window_size_title(self):
+        '''
+        Meta config of MainWindow
+        '''
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('Main Window')
 
