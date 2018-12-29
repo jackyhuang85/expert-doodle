@@ -6,6 +6,7 @@ This file contains classes for handling camera
 from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5 import QtCore
+from filters import blur, gray_scale
 import cv2
 
 class FrameThread(QThread):
@@ -29,9 +30,11 @@ class FrameThread(QThread):
                     bytesPerLine = bytesPerComponent * width
                     # convert from BGR to RGB 
                     cv2.cvtColor(frame, cv2.COLOR_BGR2RGB, frame)
+                    frame = gray_scale(frame)
+                    # frame = gray_scale(frame).astype('uint8')
                     # convert to QImage
                     image = QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888)
-                    
+
                     pixmap = QPixmap.fromImage(image)
                     pixmap = pixmap.scaled(640, 480, QtCore.Qt.KeepAspectRatio)
                     self.imgLab.setPixmap(pixmap)
