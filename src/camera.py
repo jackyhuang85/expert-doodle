@@ -30,7 +30,7 @@ class FrameThread(QThread):
                     bytesPerLine = bytesPerComponent * width
                     # convert from BGR to RGB 
                     cv2.cvtColor(frame, cv2.COLOR_BGR2RGB, frame)
-                    frame = gray_scale(frame)
+                    frame = blur(frame)
                     # frame = gray_scale(frame).astype('uint8')
                     # convert to QImage
                     image = QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888)
