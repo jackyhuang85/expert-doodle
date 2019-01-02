@@ -1,6 +1,7 @@
 import numpy as np
+import gputools
 from scipy.ndimage import filters
-
+import time
 
 def gray_scale(image):
     gray = 0.299 * image[:, :, 0] + 0.587 * \
@@ -9,10 +10,13 @@ def gray_scale(image):
 
 
 def blur(image, kernel=(3, 3), sigma=1.):
-    g = _gaussian(kernel=kernel, sigma=sigma)
+    g = _gaussian(kernel=(3, 3), sigma=1.)
     # g = gauss2D(shape=kernel, sigma=sigma)
-    blur = _filter(image, g)
-    return blur
+    tic = time.clock()
+    blur_img = _filter(image, g)
+    toc = time.clock()
+    print('applying gaussian filter used: %f sec' % (toc-tic))
+    return blur_img
 
 
 def sharpen(image, rate=0.5, kernel=(3, 3), sigma=1.):
@@ -42,9 +46,9 @@ def enhance(image, contrast=0.1, brightness=0):
 
 def _filter(image, filter):
     output = np.zeros_like(image)
-    output[:, :, 0] = filters.convolve(image[:, :, 0], filter)
-    output[:, :, 1] = filters.convolve(image[:, :, 1], filter)
-    output[:, :, 2] = filters.convolve(image[:, :, 2], filter)
+    output[:, :, 0] = gputools.convolve(image[:, :, 0], filter)
+    output[:, :, 1] = gputools.convolve(image[:, :, 1], filter)
+    output[:, :, 2] = gputools.convolve(image[:, :, 2], filter)
 
     return output
 
