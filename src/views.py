@@ -114,11 +114,9 @@ class MainWindow(QMainWindow):
         menubar.setNativeMenuBar(False)
 
     def on_clicked_take_photo_button(self):
+        pass
         #path = self.camera_thread.save_frame()
         #print('Image is saved to %s' % path)
-
-
-
 
 class FiltersBlock(QWidget):
     filters = {}
@@ -132,11 +130,11 @@ class FiltersBlock(QWidget):
         self.filters_grid_layout = QGridLayout()
         self.setLayout(self.filters_grid_layout)
         self.controller.load_filters(self.filters)
-        
+
         filters_name = self.filters.keys()
         for i, name in enumerate(filters_name):
             bt = QPushButton(('%s' % name).replace('_', ' '))
-            bt.resize(50, 50)
+            
             self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
             rbt = QRadioButton('%s' % name.replace('_', ' '))
             self.filters_grid_layout.addWidget(rbt, 2, i, QtCore.Qt.AlignHCenter)
