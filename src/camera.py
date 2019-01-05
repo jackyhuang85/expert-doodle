@@ -6,8 +6,11 @@ This file contains classes for handling camera
 from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5 import QtCore
-from filters import blur, gray_scale
+from filters import *
 import cv2
+import time
+import os
+
 
 class FrameThread(QThread):
     imgLab = None
@@ -28,12 +31,19 @@ class FrameThread(QThread):
                     ret, frame = self.device.read()
                     height, width, bytesPerComponent = frame.shape
                     bytesPerLine = bytesPerComponent * width
-                    # convert from BGR to RGB 
+                    # convert from BGR to RGB
                     cv2.cvtColor(frame, cv2.COLOR_BGR2RGB, frame)
-                    frame = blur(frame)
-                    # frame = gray_scale(frame).astype('uint8')
+
+                    self.frame = edge_detect(frame, thin=False).astype('uint8')
+
+                    # Extend to 3 channel if only 1
+                    if len(self.frame.shape) == 2:
+                        self.frame = np.repeat(
+                            self.frame[:, :, np.newaxis], 3, axis=2)
+
                     # convert to QImage
-                    image = QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888)
+                    image = QImage(self.frame.data, width, height,
+                                   bytesPerLine, QImage.Format_RGB888)
 
                     pixmap = QPixmap.fromImage(image)
                     pixmap = pixmap.scaled(640, 480, QtCore.Qt.KeepAspectRatio)
@@ -43,3 +53,12 @@ class FrameThread(QThread):
 
     def destroyed(self, QObject=None):
         self.device.release()
+
+    def save_frame(self, path=None):
+        if path is None:
+            name = 'img-'+str(int(time.time()))+'.png'
+            path = os.path.join('../data', name)
+
+        cv2.imwrite(path, self.frame)
+
+        return path

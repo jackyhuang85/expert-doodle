@@ -5,10 +5,11 @@ It includes the config of layout, the appearance of widgets,
 and also assigns event-handler for each widget.
 
 '''
-from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout, 
+from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout,
                              QWidget, QGroupBox, QVBoxLayout,
                              QPushButton, QScrollArea, QGridLayout)
 from camera import FrameThread
+
 
 class MainWindow(QMainWindow):
     '''
@@ -71,7 +72,7 @@ class MainWindow(QMainWindow):
         '''
         self.filter_horizontal_group_box = QGroupBox('Filters')
         layout = QHBoxLayout()
-        
+
         filters_block = FiltersBlock(self)
         filters_block.setMinimumWidth(1500)
         scroll = QScrollArea()
@@ -80,10 +81,8 @@ class MainWindow(QMainWindow):
         scroll.setAutoFillBackground(True)
 
         layout.addWidget(scroll)
-        
-        self.filter_horizontal_group_box.setLayout(layout)
-        
 
+        self.filter_horizontal_group_box.setLayout(layout)
 
     def set_window_size_title(self):
         '''
@@ -98,9 +97,8 @@ class MainWindow(QMainWindow):
         menubar.setNativeMenuBar(False)
 
     def on_clicked_take_photo_button(self):
-        print('clicked')
-
-
+        path = self.frame_thread.save_frame()
+        print('Image is saved to %s' % path)
 
 
 class FiltersBlock(QWidget):
@@ -111,7 +109,6 @@ class FiltersBlock(QWidget):
 
     def init_ui(self):
         self.filters_grid_layout = QGridLayout()
-
 
         self.test_btn = QPushButton('test')
         for i in range(20):

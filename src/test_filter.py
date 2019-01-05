@@ -13,9 +13,8 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(gray)
 
-    freq = 3
-
-    blurred = blur(image, kernel=(freq*4+1, freq*4+1), sigma=0.5)
+    freq = 5
+    blurred = blur(image, kernel=(freq*4+1, freq*4+1), sigma=freq)
     plt.figure()
     plt.imshow(blurred)
 
