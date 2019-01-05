@@ -130,12 +130,22 @@ class FiltersBlock(QWidget):
         self.filters_grid_layout = QGridLayout()
         self.setLayout(self.filters_grid_layout)
         self.controller.load_filters(self.filters)
-
+        
         filters_name = self.filters.keys()
         for i, name in enumerate(filters_name):
-            bt = QPushButton(('%s' % name).replace('_', ' '))
-            
+            if name == 'none':
+                bt = QPushButton('None')
+                rbt = QRadioButton('None')
+                rbt.setChecked(True)
+                
+            else:
+                bt = QPushButton(('%s' % name).replace('_', ' '))
+                rbt = QRadioButton('%s' % name.replace('_', ' '))
+
+            rbt.toggled.connect(lambda: self.r_btn_state(rbt))
             self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
-            rbt = QRadioButton('%s' % name.replace('_', ' '))
             self.filters_grid_layout.addWidget(rbt, 2, i, QtCore.Qt.AlignHCenter)
+    
+    def r_btn_state(self, radio_btn):
+        pass
 
