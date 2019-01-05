@@ -27,12 +27,14 @@ class MainViewController():
         Arguments:
             filters_list {dict} -- [description]
         '''
+        filters_list['none'] = None
         filters_list['gray_scale'] = filters.gray_scale
         filters_list['blur'] = filters.blur
         filters_list['sharpen'] = filters.sharpen
         filters_list['invert'] = filters.invert
         filters_list['enhance'] = filters.enhance
         filters_list['power'] = filters.power
+        
 
     class FrameIO():
         data = None
