@@ -114,7 +114,8 @@ class MainWindow(QMainWindow):
         menubar.setNativeMenuBar(False)
 
     def on_clicked_take_photo_button(self):
-        print('clicked')
+        #path = self.camera_thread.save_frame()
+        #print('Image is saved to %s' % path)
 
 
 

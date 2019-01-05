@@ -6,8 +6,10 @@ This file contains classes for handling camera
 from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5 import QtCore
-from filters import blur, gray_scale
+from filters import *
 import cv2
+import time
+import os
 
 class CameraThread(QThread):
     imgLab = None
@@ -41,6 +43,15 @@ class CameraThread(QThread):
 
     def destroyed(self, QObject=None):
         self.device.release()
+        
+    def save_frame(self, path=None):
+        if path is None:
+            name = 'img-'+str(int(time.time()))+'.png'
+            path = os.path.join('../data', name)
+
+        cv2.imwrite(path, self.frame)
+
+        return path
 
 
 class FrameThread(QThread):
