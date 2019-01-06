@@ -37,20 +37,10 @@ class CameraThread(QThread):
                     # frame = blur(frame)
                     # frame = gray_scale(frame).astype('uint8')
                     # convert to QImage
-<<<<<<< HEAD
-                    if self.output.not_in_use:
-                        self.output.not_in_use = False
-                        self.output.data = frame
-                        # import pdb
-                        # pdb.set_trace()
-                        self.output.not_in_use = True
-
-=======
                     self.lock.acquire()
-                    self.output.data = frame.data
+                    self.output.data = frame.copy()
                     self.lock.release()
                     
->>>>>>> Add threading.Lock
             finally:
                 self.device.release()
 
@@ -75,41 +65,21 @@ class FrameThread(QThread):
     WIDTH = 1280
     HEIGHT = 720
     CHANNEL = 3
-<<<<<<< HEAD
 
-    def __init__(self, img_lab, i_frame):
-        QThread.__init__(self)
-        self._img_lab = img_lab
-        self.input_frame = i_frame
-
-=======
-    
     def __init__(self, img_lab, i_frame, lock):
         QThread.__init__(self)
         self._img_lab = img_lab
         self.input_frame = i_frame
         self.lock = lock
-    
->>>>>>> Add threading.Lock
+
     def run(self):
         try:
             while True:
-                # print(self.input_frame)
-<<<<<<< HEAD
-                if (self.input_frame.data is not None) and (self.input_frame.not_in_use):
-                    self.input_frame.not_in_use = False
-=======
                 self.lock.acquire()
                 if (self.input_frame.data is not None):
->>>>>>> Add threading.Lock
                     if self._filter_enable:
                         pass
                     else:
-                        # frame = self.input_frame.data
-                        # image = QImage(self.input_frame.data,
-                        #                self.WIDTH,
-                        #                self.HEIGHT,
-                        #                QImage.Format_RGB888)
                         image = Image.fromarray(self.input_frame.data)
                         image = ImageQt(image)
                         pixmap = QPixmap.fromImage(image)
@@ -118,7 +88,6 @@ class FrameThread(QThread):
                         self._img_lab.setPixmap(pixmap)
                         del image
                         del self.input_frame.data
-                
                 self.lock.release()
 
         finally:
