@@ -1,4 +1,5 @@
 from camera import CameraThread, FrameThread
+from threading import Lock
 import filters
 
 class MainViewController():
@@ -17,8 +18,9 @@ class MainViewController():
 
     def bind_to_frame_thread(self, frame_label):
         io_frame = self.FrameIO()
-        self.frame_thread = FrameThread(frame_label, io_frame)
-        self.camera_thread = CameraThread(0, io_frame)
+        frame_lock = Lock()
+        self.frame_thread = FrameThread(frame_label, io_frame, frame_lock)
+        self.camera_thread = CameraThread(0, io_frame, frame_lock)
 
 
     def load_filters(self, filters_list):

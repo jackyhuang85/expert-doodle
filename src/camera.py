@@ -18,13 +18,14 @@ class CameraThread(QThread):
     imgLab = None
     device = None
 
-    def __init__(self, deviceIndex, output):
+    def __init__(self, deviceIndex, output, lock):
         QThread.__init__(self)
         self.output = output
         self.deviceIndex = deviceIndex
         self.device = cv2.VideoCapture(self.deviceIndex)
         self.device.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.device.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.lock = lock
 
     def run(self):
         if self.device.isOpened():
@@ -36,6 +37,7 @@ class CameraThread(QThread):
                     # frame = blur(frame)
                     # frame = gray_scale(frame).astype('uint8')
                     # convert to QImage
+<<<<<<< HEAD
                     if self.output.not_in_use:
                         self.output.not_in_use = False
                         self.output.data = frame
@@ -43,6 +45,12 @@ class CameraThread(QThread):
                         # pdb.set_trace()
                         self.output.not_in_use = True
 
+=======
+                    self.lock.acquire()
+                    self.output.data = frame.data
+                    self.lock.release()
+                    
+>>>>>>> Add threading.Lock
             finally:
                 self.device.release()
 
@@ -67,18 +75,33 @@ class FrameThread(QThread):
     WIDTH = 1280
     HEIGHT = 720
     CHANNEL = 3
+<<<<<<< HEAD
 
     def __init__(self, img_lab, i_frame):
         QThread.__init__(self)
         self._img_lab = img_lab
         self.input_frame = i_frame
 
+=======
+    
+    def __init__(self, img_lab, i_frame, lock):
+        QThread.__init__(self)
+        self._img_lab = img_lab
+        self.input_frame = i_frame
+        self.lock = lock
+    
+>>>>>>> Add threading.Lock
     def run(self):
         try:
             while True:
                 # print(self.input_frame)
+<<<<<<< HEAD
                 if (self.input_frame.data is not None) and (self.input_frame.not_in_use):
                     self.input_frame.not_in_use = False
+=======
+                self.lock.acquire()
+                if (self.input_frame.data is not None):
+>>>>>>> Add threading.Lock
                     if self._filter_enable:
                         pass
                     else:
@@ -95,7 +118,8 @@ class FrameThread(QThread):
                         self._img_lab.setPixmap(pixmap)
                         del image
                         del self.input_frame.data
-                    self.input_frame.not_in_use = True
+                
+                self.lock.release()
 
         finally:
             pass
