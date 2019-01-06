@@ -63,7 +63,7 @@ class FrameThread(QThread):
     input_frame = None
     _filter_enable = False
     _img_lab = None
-
+    _filter = None
     WIDTH = 1280
     HEIGHT = 720
     CHANNEL = 3
@@ -72,7 +72,7 @@ class FrameThread(QThread):
         QThread.__init__(self)
         self._img_lab = img_lab
         self.input_frame = i_frame
-
+    
     def run(self):
         try:
             while True:
@@ -80,7 +80,18 @@ class FrameThread(QThread):
                 if (self.input_frame.data is not None) and (self.input_frame.not_in_use):
                     self.input_frame.not_in_use = False
                     if self._filter_enable:
-                        pass
+                        image = self._filter(self.input_frame.data)
+                        image = Image.fromarray(image)
+                        if image.mode != 'RGB':
+                            image = image.convert('RGB')
+                        image = ImageQt(image)
+                        pixmap = QPixmap.fromImage(image)
+                        pixmap = pixmap.scaled(
+                            640, 480, QtCore.Qt.KeepAspectRatio)
+                        self._img_lab.setPixmap(pixmap)
+                        del image
+                        del self.input_frame.data
+
                     else:
                         # frame = self.input_frame.data
                         # image = QImage(self.input_frame.data,
@@ -96,6 +107,13 @@ class FrameThread(QThread):
                         del image
                         del self.input_frame.data
                     self.input_frame.not_in_use = True
-
         finally:
             pass
+
+    def apply_filter(self, to_apply):
+        if filter is not None:
+            self._filter_enable = True
+            self._filter = to_apply
+        else:
+            self._filter_enable = False
+            self._filter = None
