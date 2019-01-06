@@ -31,17 +31,15 @@ class CameraThread(QThread):
             try:
                 while True:
                     _, frame = self.device.read()
+
                     # convert from BGR to RGB
                     cv2.cvtColor(frame, cv2.COLOR_BGR2RGB, frame)
-                    # frame = blur(frame)
-                    # frame = gray_scale(frame).astype('uint8')
+
                     # convert to QImage
                     if self.output.not_in_use:
                         self.output.not_in_use = False
                         self.output.data = frame
-                        # import pdb
-                        # pdb.set_trace()
-                        self.output.not_in_use = True
+                        self.output.not_in_use = True                   
 
             finally:
                 self.device.release()
@@ -49,21 +47,13 @@ class CameraThread(QThread):
     def destroyed(self, QObject=None):
         self.device.release()
 
-    def save_frame(self, path=None):
-        if path is None:
-            name = 'img-'+str(int(time.time()))+'.png'
-            path = os.path.join('../data', name)
-
-        cv2.imwrite(path, self.frame)
-
-        return path
-
 
 class FrameThread(QThread):
     input_frame = None
     _filter_enable = False
     _img_lab = None
     _filter = None
+    output_frame = None
     WIDTH = 1280
     HEIGHT = 720
     CHANNEL = 3
@@ -76,11 +66,12 @@ class FrameThread(QThread):
     def run(self):
         try:
             while True:
-                # print(self.input_frame)
                 if (self.input_frame.data is not None) and (self.input_frame.not_in_use):
                     self.input_frame.not_in_use = False
                     if self._filter_enable:
-                        image = self._filter(self.input_frame.data)
+                        self.output_frame = self._filter(self.input_frame.data)
+
+                        image = self.output_frame
                         image = Image.fromarray(image)
                         if image.mode != 'RGB':
                             image = image.convert('RGB')
@@ -98,7 +89,8 @@ class FrameThread(QThread):
                         #                self.WIDTH,
                         #                self.HEIGHT,
                         #                QImage.Format_RGB888)
-                        image = Image.fromarray(self.input_frame.data)
+                        self.output_frame = self.input_frame.data
+                        image = Image.fromarray(self.output_frame)
                         image = ImageQt(image)
                         pixmap = QPixmap.fromImage(image)
                         pixmap = pixmap.scaled(
@@ -117,3 +109,12 @@ class FrameThread(QThread):
         else:
             self._filter_enable = False
             self._filter = None
+
+    def save_frame(self, path=None):
+        if path is None:
+            name = 'img-'+str(int(time.time()))+'.png'
+            path = os.path.join('../data', name)
+
+        image = Image.fromarray(self.output_frame)
+        image.save(path)
+        return path

@@ -46,6 +46,8 @@ class MainViewController():
             filter_selected = self.filters_list[filter_name]
             self.frame_thread.apply_filter(filter_selected)
 
+    def take_photo(self, path=None):
+        return self.frame_thread.save_frame(path=path)
 
     class FrameIO():
         data = None

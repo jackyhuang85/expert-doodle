@@ -115,9 +115,9 @@ class MainWindow(QMainWindow):
         menubar.setNativeMenuBar(False)
 
     def on_clicked_take_photo_button(self):
-        pass
+        path = self.controller.take_photo()
         #path = self.camera_thread.save_frame()
-        #print('Image is saved to %s' % path)
+        print('Image is saved to %s' % path)
 
 
 class FiltersBlock(QWidget):
@@ -136,7 +136,7 @@ class FiltersBlock(QWidget):
         self.controller.load_filters(self.filters)
 
         filters_name = self.filters.keys()
-        print(filters_name)
+
         bt_list = []
         for i, name in enumerate(filters_name):
             print(name)
