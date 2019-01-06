@@ -6,7 +6,7 @@ import time
 def gray_scale(image):
     gray = 0.299 * image[:, :, 0] + 0.587 * \
         image[:, :, 1] + 0.114 * image[:, :, 2]
-    return gray
+    return gray.astype('uint8')
 
 
 def blur(image, kernel=(3, 3), sigma=1.):
@@ -15,13 +15,13 @@ def blur(image, kernel=(3, 3), sigma=1.):
     blur_img = _filter3d(image, g)
     toc = time.clock()
     print('applying gaussian filter used: %f sec' % (toc-tic))
-    return blur_img
+    return blur_img.astype('uint8')
 
 
 def sharpen(image, rate=0.5, kernel=(3, 3), sigma=1.):
     blurred = blur(image, kernel=kernel, sigma=sigma)
     sharp = np.clip((1+rate)*image - rate*blurred, 0, 255).astype('int')
-    return sharp
+    return sharp.astype('uint8')
 
 
 def invert(image):
@@ -31,16 +31,19 @@ def invert(image):
 def power(image, rate=0.5):
     powered = image**rate
     powered = powered * (255/powered.max())
-    return powered.astype('int')
+    return powered.astype('uint8')
 
 
 def enhance(image, contrast=0.1, brightness=0):
-    enhanced = np.zeros_like(image)
-    enhanced[:, :, 0] = contrast*(image[:, :, 0]-128) + 128 + brightness
-    enhanced[:, :, 1] = contrast*(image[:, :, 1]-128) + 128 + brightness
-    enhanced[:, :, 2] = contrast*(image[:, :, 2]-128) + 128 + brightness
-    enhanced = np.clip(enhanced, 0, 255).astype('int')
-    return enhanced
+    # image = gray_scale(image).astype('float')
+    image = image.astype('float')
+    enhanced = contrast * (image - 128) + 128 + brightness
+    # enhanced = np.zeros_like(image)
+    # enhanced[:, :, 0] = contrast*(image[:, :, 0]-128) + 128 + brightness
+    # enhanced[:, :, 1] = contrast*(image[:, :, 1]-128) + 128 + brightness
+    # enhanced[:, :, 2] = contrast*(image[:, :, 2]-128) + 128 + brightness
+    enhanced = np.clip(enhanced, 0, 255)
+    return enhanced.astype('uint8')
 
 
 def sobel(image, mode=0):
@@ -54,20 +57,25 @@ def sobel(image, mode=0):
         f = np.array([[1, 2, 1],
                       [0, 0, 0],
                       [-1, -2, -1]])
-    return _filter2d(image, f)
+    grad = _filter2d(image, f)
+    return grad.astype('uint8')
 
 
 def edge_detect(image, thin=True):
     blurred = blur(image, sigma=1.5)
-    gx = sobel(blurred, mode=0)
-    gy = sobel(blurred, mode=1)
-    mag = np.sqrt(gx**2+gy**2)
+    gx = sobel(blurred, mode=0).astype('float')
+    gy = sobel(blurred, mode=1).astype('float')
+    mag = np.sqrt((gx)+(gy**2))
     if thin is True:
+        gxx = sobel(gx, mode=0)
+        gyy = sobel(gy, mode=1)
         gxy = sobel(gx, mode=1)
         gyx = sobel(gy, mode=0)
+        mag[gxx < 0] = 0
+        mag[gyy < 0] = 0
         mag[gxy < 0] = 0
         mag[gyx < 0] = 0
-    return mag
+    return mag.astype('uint8')
 
 
 def _filter2d(image, filter):
