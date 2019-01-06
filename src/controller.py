@@ -4,7 +4,7 @@ import filters
 class MainViewController():
     camera_thread = None
     frame_thread = None
-
+    filters_list = []
     def __init__(self, window):
         self.window_view = window
         self.main_widget = window.centralWidget()
@@ -27,12 +27,25 @@ class MainViewController():
         Arguments:
             filters_list {dict} -- [description]
         '''
+        filters_list['none'] = None
         filters_list['gray_scale'] = filters.gray_scale
         filters_list['blur'] = filters.blur
         filters_list['sharpen'] = filters.sharpen
         filters_list['invert'] = filters.invert
         filters_list['enhance'] = filters.enhance
         filters_list['power'] = filters.power
+        filters_list['sobel'] = filters.sobel
+        filters_list['edge_detect'] = filters.edge_detect
+        self.filters_list = filters_list
+
+    def apply_filter(self, filter_name):
+        if filter_name == 'None':
+            filter_selected = None
+            self.frame_thread.apply_filter(filter_selected)
+        else:
+            filter_selected = self.filters_list[filter_name]
+            self.frame_thread.apply_filter(filter_selected)
+
 
     class FrameIO():
         data = None

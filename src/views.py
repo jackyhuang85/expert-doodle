@@ -5,13 +5,14 @@ It includes the config of layout, the appearance of widgets,
 and also assigns event-handler for each widget.
 
 '''
-from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout, 
+from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout,
                              QWidget, QGroupBox, QVBoxLayout,
                              QPushButton, QScrollArea, QGridLayout,
                              QRadioButton)
 from PyQt5 import QtCore
 from camera import FrameThread
 from controller import MainViewController
+
 
 class MainWindow(QMainWindow):
     '''
@@ -21,6 +22,7 @@ class MainWindow(QMainWindow):
         None -- no argument needed
     '''
     controller = None
+
     def __init__(self):
         super().__init__()
         self.content_wid = QWidget(self)
@@ -39,7 +41,7 @@ class MainWindow(QMainWindow):
         # Main component
         self.create_camera_horizontal_layout()
         self.create_filters_horizontal_layout()
-        
+
         # Set up menu bar
         self.set_menubar()
 
@@ -100,7 +102,6 @@ class MainWindow(QMainWindow):
 
         self.filter_horizontal_group_box.setLayout(layout)
 
-
     def set_window_size_title(self):
         '''
         Meta config of MainWindow
@@ -118,13 +119,16 @@ class MainWindow(QMainWindow):
         #path = self.camera_thread.save_frame()
         #print('Image is saved to %s' % path)
 
+
 class FiltersBlock(QWidget):
     filters = {}
+
     def __init__(self, parent):
         QWidget.__init__(self)
         self.parent = parent
         self.controller = parent.controller
         self.init_ui()
+        self.flag = 'None'
 
     def init_ui(self):
         self.filters_grid_layout = QGridLayout()
@@ -132,10 +136,33 @@ class FiltersBlock(QWidget):
         self.controller.load_filters(self.filters)
 
         filters_name = self.filters.keys()
+        print(filters_name)
+        bt_list = []
         for i, name in enumerate(filters_name):
-            bt = QPushButton(('%s' % name).replace('_', ' '))
-            
-            self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
-            rbt = QRadioButton('%s' % name.replace('_', ' '))
-            self.filters_grid_layout.addWidget(rbt, 2, i, QtCore.Qt.AlignHCenter)
+            print(name)
+            if name == 'none':
+                bt = QPushButton('None')
+                bt_list.append(bt)
+                bt.clicked.connect(lambda: print(name[:]))
+                rbt = QRadioButton('None')
+                rbt.setChecked(True)
+                rbt.toggled.connect(
+                    lambda checked, text=name, button=rbt: self.r_btn_state('None', button))
 
+            else:
+                bt = QPushButton(('%s' % name).replace('_', ' '))
+                bt_list.append(bt)
+                bt.clicked.connect(lambda checked, text=name: print(text))
+                rbt = QRadioButton('%s' % name.replace('_', ' '))
+                rbt.toggled.connect(
+                    lambda checked, text=name, button=rbt: self.r_btn_state(text, button))
+
+            self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
+            self.filters_grid_layout.addWidget(
+                rbt, 2, i, QtCore.Qt.AlignHCenter)
+
+    def r_btn_state(self, btn_text, button):
+        if button.isChecked():
+            print(button.text())
+            self.flag = btn_text
+            self.controller.apply_filter(self.flag)

@@ -10,11 +10,8 @@ def gray_scale(image):
 
 
 def blur(image, kernel=(3, 3), sigma=1.):
-    tic = time.clock()
     g = gauss2D(shape=kernel, sigma=sigma)
     blur_img = _filter3d(image, g)
-    toc = time.clock()
-    print('applying gaussian filter used: %f sec' % (toc-tic))
     return blur_img.astype('uint8')
 
 
@@ -76,7 +73,6 @@ def edge_detect(image, thin=True):
         mag[gxy < 0] = 0
         mag[gyx < 0] = 0
     return mag.astype('uint8')
-
 
 def _filter2d(image, filter):
     return gputools.convolve(image, filter)
