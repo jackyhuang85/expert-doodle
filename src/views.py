@@ -5,12 +5,13 @@ It includes the config of layout, the appearance of widgets,
 and also assigns event-handler for each widget.
 
 '''
+import os
 from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout,
                              QWidget, QGroupBox, QVBoxLayout,
                              QPushButton, QScrollArea, QGridLayout,
                              QRadioButton)
+from PyQt5.QtGui import QPixmap
 from PyQt5 import QtCore
-from camera import FrameThread
 from controller import MainViewController
 
 
@@ -137,27 +138,26 @@ class FiltersBlock(QWidget):
 
         filters_name = self.filters.keys()
 
-        bt_list = []
         for i, name in enumerate(filters_name):
             print(name)
             if name == 'none':
-                bt = QPushButton('None')
-                bt_list.append(bt)
-                bt.clicked.connect(lambda: print(name[:]))
                 rbt = QRadioButton('None')
                 rbt.setChecked(True)
                 rbt.toggled.connect(
                     lambda checked, text=name, button=rbt: self.r_btn_state('None', button))
 
             else:
-                bt = QPushButton(('%s' % name).replace('_', ' '))
-                bt_list.append(bt)
-                bt.clicked.connect(lambda checked, text=name: print(text))
                 rbt = QRadioButton('%s' % name.replace('_', ' '))
                 rbt.toggled.connect(
                     lambda checked, text=name, button=rbt: self.r_btn_state(text, button))
 
-            self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
+            thumb = QLabel()
+            thumb.resize(150, 150)
+            thumb_img = QPixmap(os.path.join('../example/', ('%s.jpg' % name)))
+            thumb_img = thumb_img.scaled(150, 150, QtCore.Qt.KeepAspectRatio)
+            thumb.setPixmap(thumb_img)
+
+            self.filters_grid_layout.addWidget(thumb, 0, i, 2, 1)
             self.filters_grid_layout.addWidget(
                 rbt, 2, i, QtCore.Qt.AlignHCenter)
 
