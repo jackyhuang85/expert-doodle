@@ -137,15 +137,15 @@ class FiltersBlock(QWidget):
                 bt = QPushButton('None')
                 rbt = QRadioButton('None')
                 rbt.setChecked(True)
+                rbt.toggled.connect(lambda: self.r_btn_state('None'))
                 
             else:
                 bt = QPushButton(('%s' % name).replace('_', ' '))
                 rbt = QRadioButton('%s' % name.replace('_', ' '))
+                rbt.toggled.connect(lambda: self.r_btn_state(name))
 
-            rbt.toggled.connect(lambda: self.r_btn_state(rbt))
             self.filters_grid_layout.addWidget(bt, 0, i, 2, 1)
             self.filters_grid_layout.addWidget(rbt, 2, i, QtCore.Qt.AlignHCenter)
     
-    def r_btn_state(self, radio_btn):
-        pass
-
+    def r_btn_state(self, btn_text):
+        print(btn_text)
