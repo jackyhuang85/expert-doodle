@@ -1,7 +1,7 @@
 # Expert-Doodle
 
 ## Install
-### Necessary Package
+### Package Requirement
 * opencv 
     * `$ conda install opencv`
 
