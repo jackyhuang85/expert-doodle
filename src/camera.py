@@ -39,7 +39,7 @@ class CameraThread(QThread):
                     if self.output.not_in_use:
                         self.output.not_in_use = False
                         self.output.data = frame
-                        self.output.not_in_use = True                   
+                        self.output.not_in_use = True
 
             finally:
                 self.device.release()
@@ -53,6 +53,8 @@ class FrameThread(QThread):
     _filter_enable = False
     _img_lab = None
     _filter = None
+    _rate = 0
+    _strength = 0
     output_frame = None
     WIDTH = 1280
     HEIGHT = 720
@@ -62,14 +64,26 @@ class FrameThread(QThread):
         QThread.__init__(self)
         self._img_lab = img_lab
         self.input_frame = i_frame
-    
+
     def run(self):
         try:
             while True:
                 if (self.input_frame.data is not None) and (self.input_frame.not_in_use):
                     self.input_frame.not_in_use = False
                     if self._filter_enable:
-                        self.output_frame = self._filter(self.input_frame.data)
+                        kernel = (self._strength/10+5, self._strength/20+5)
+                        sigma = self._strength/10+5
+                        rate = self._rate/50+1
+                        contrast = (self._rate+10)/50+1
+                        brightness = self._strength
+                        self.output_frame = self._filter(
+                            self.input_frame.data,
+                            kernel=kernel,
+                            sigma=sigma,
+                            rate=rate,
+                            contrast=contrast,
+                            brightness=brightness
+                        ).astype('uint8')
 
                         image = self.output_frame
                         image = Image.fromarray(image)
@@ -103,12 +117,18 @@ class FrameThread(QThread):
             pass
 
     def apply_filter(self, to_apply):
-        if filter is not None:
+        if to_apply is not None:
             self._filter_enable = True
             self._filter = to_apply
         else:
             self._filter_enable = False
             self._filter = None
+
+    def change_filter_rate(self, rate):
+        self._rate = rate
+
+    def change_filter_strength(self, strength):
+        self._strength = strength
 
     def save_frame(self, path=None):
         if path is None:

@@ -9,7 +9,7 @@ import os
 from PyQt5.QtWidgets import (QMainWindow, QLabel, QHBoxLayout,
                              QWidget, QGroupBox, QVBoxLayout,
                              QPushButton, QScrollArea, QGridLayout,
-                             QRadioButton)
+                             QRadioButton, QSlider)
 from PyQt5.QtGui import QPixmap
 from PyQt5 import QtCore
 from controller import MainViewController
@@ -78,6 +78,11 @@ class MainWindow(QMainWindow):
 
         # Right-side group box
         camera_filters_para_group_box = QGroupBox('Parameter')
+        camera_filters_para_group_layout = QVBoxLayout()
+        parameter_block = ParametersBlock(self)
+        camera_filters_para_group_layout.addWidget(parameter_block)
+        camera_filters_para_group_box.setLayout(
+            camera_filters_para_group_layout)
 
         layout.addWidget(camera_operation_group_box)
         layout.addWidget(camera_label)
@@ -107,7 +112,7 @@ class MainWindow(QMainWindow):
         '''
         Meta config of MainWindow
         '''
-        self.setGeometry(300, 300, 1280, 720)
+        self.setGeometry(300, 300, 1440, 810)
         self.setWindowTitle('Main Window')
 
     def set_menubar(self):
@@ -129,7 +134,6 @@ class FiltersBlock(QWidget):
         self.parent = parent
         self.controller = parent.controller
         self.init_ui()
-        self.flag = 'None'
 
     def init_ui(self):
         self.filters_grid_layout = QGridLayout()
@@ -166,3 +170,38 @@ class FiltersBlock(QWidget):
             print(button.text())
             self.flag = btn_text
             self.controller.apply_filter(self.flag)
+
+
+class ParametersBlock(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self)
+        self.parent = parent
+        self.controller = parent.controller
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.rate_slider = QSlider(QtCore.Qt.Horizontal)
+        self.rate_slider.setRange(-49, 50)
+        self.rate_slider.setValue(0)
+        self.rate_slider.setTickPosition(QSlider.TicksBelow)
+        self.rate_slider.setTickInterval(10)
+        self.rate_slider.valueChanged.connect(self.rate_value_change)
+
+        self.strength_slider = QSlider(QtCore.Qt.Horizontal)
+        self.strength_slider.setRange(-49, 50)
+        self.strength_slider.setValue(0)
+        self.strength_slider.setTickPosition(QSlider.TicksBelow)
+        self.strength_slider.setTickInterval(10)
+        self.strength_slider.valueChanged.connect(self.strength_value_change)
+
+        self.layout.addWidget(self.rate_slider)
+        self.layout.addWidget(self.strength_slider)
+
+    def rate_value_change(self, value):
+        self.controller.change_filter_rate(value)
+
+    def strength_value_change(self, value):
+        self.controller.change_filter_strength(value)

@@ -1,25 +1,24 @@
 from camera import CameraThread, FrameThread
 import filters
 
+
 class MainViewController():
     camera_thread = None
     frame_thread = None
     filters_list = []
+
     def __init__(self, window):
         self.window_view = window
         self.main_widget = window.centralWidget()
-
 
     def start(self, debug=False):
         self.camera_thread.start()
         self.frame_thread.start()
 
-
     def bind_to_frame_thread(self, frame_label):
         io_frame = self.FrameIO()
         self.frame_thread = FrameThread(frame_label, io_frame)
         self.camera_thread = CameraThread(0, io_frame)
-
 
     def load_filters(self, filters_list):
         '''
@@ -45,6 +44,12 @@ class MainViewController():
         else:
             filter_selected = self.filters_list[filter_name]
             self.frame_thread.apply_filter(filter_selected)
+
+    def change_filter_rate(self, rate):
+        self.frame_thread.change_filter_rate(rate)
+
+    def change_filter_strength(self, strength):
+        self.frame_thread.change_filter_strength(strength)
 
     def take_photo(self, path=None):
         return self.frame_thread.save_frame(path=path)
