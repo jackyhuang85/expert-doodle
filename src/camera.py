@@ -60,10 +60,11 @@ class FrameThread(QThread):
     HEIGHT = 720
     CHANNEL = 3
 
-    def __init__(self, img_lab, i_frame):
+    def __init__(self, img_lab, i_frame, mac_os=False):
         QThread.__init__(self)
         self._img_lab = img_lab
         self.input_frame = i_frame
+        self._use_mac_os = mac_os
 
     def run(self):
         try:
@@ -86,10 +87,21 @@ class FrameThread(QThread):
                         ).astype('uint8')
 
                         image = self.output_frame
-                        image = Image.fromarray(image)
-                        if image.mode != 'RGB':
-                            image = image.convert('RGB')
-                        image = ImageQt(image)
+                        if self._use_mac_os:
+                            if len(image.shape) != 3:
+                                image = np.repeat(image[:,:,np.newaxis], 3, axis=2)
+
+                            image = QImage(image,
+                                           self.WIDTH,
+                                           self.HEIGHT,
+                                           self.WIDTH*self.CHANNEL,
+                                           QImage.Format_RGB888)
+                        else:
+                            image = Image.fromarray(image)
+                            if image.mode != 'RGB':
+                                image = image.convert('RGB')
+                            image = ImageQt(image)
+
                         pixmap = QPixmap.fromImage(image)
                         pixmap = pixmap.scaled(
                             640, 480, QtCore.Qt.KeepAspectRatio)
@@ -98,14 +110,22 @@ class FrameThread(QThread):
                         del self.input_frame.data
 
                     else:
-                        # frame = self.input_frame.data
-                        # image = QImage(self.input_frame.data,
-                        #                self.WIDTH,
-                        #                self.HEIGHT,
-                        #                QImage.Format_RGB888)
                         self.output_frame = self.input_frame.data
-                        image = Image.fromarray(self.output_frame)
-                        image = ImageQt(image)
+
+                        if self._use_mac_os:
+                            if len(self.output_frame.shape) != 3:
+                                self.output_frame = np.repeat(self.output_frame[:,:,np.newaxis], 3, axis=2)
+                            
+                            image = QImage(self.output_frame,
+                                           self.WIDTH,
+                                           self.HEIGHT,
+                                           self.WIDTH*self.CHANNEL,
+                                           QImage.Format_RGB888)
+                        else:                   
+                            self.output_frame = self.input_frame.data
+                            image = Image.fromarray(self.output_frame)
+                            image = ImageQt(image)
+
                         pixmap = QPixmap.fromImage(image)
                         pixmap = pixmap.scaled(
                             640, 480, QtCore.Qt.KeepAspectRatio)

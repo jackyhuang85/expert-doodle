@@ -7,7 +7,8 @@ class MainViewController():
     frame_thread = None
     filters_list = []
 
-    def __init__(self, window):
+    def __init__(self, window, platform=None):
+        self._sys_platform = platform
         self.window_view = window
         self.main_widget = window.centralWidget()
 
@@ -17,7 +18,13 @@ class MainViewController():
 
     def bind_to_frame_thread(self, frame_label):
         io_frame = self.FrameIO()
-        self.frame_thread = FrameThread(frame_label, io_frame)
+        
+        if self._sys_platform == 'Darwin':
+            self.frame_thread = FrameThread(frame_label, io_frame, mac_os=True)
+        
+        else:
+            self.frame_thread = FrameThread(frame_label, io_frame)
+        
         self.camera_thread = CameraThread(0, io_frame)
 
     def load_filters(self, filters_list):

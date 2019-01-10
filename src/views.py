@@ -24,11 +24,11 @@ class MainWindow(QMainWindow):
     '''
     controller = None
 
-    def __init__(self):
+    def __init__(self, platform=None):
         super().__init__()
         self.content_wid = QWidget(self)
         self.setCentralWidget(self.content_wid)
-        self.controller = MainViewController(self)
+        self.controller = MainViewController(self, platform)
         self.init_ui()
         self.controller.start()
 
