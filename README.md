@@ -5,7 +5,8 @@ Expert-Doodle is **real-time image processing Python GUI application**. It's opt
 1. [How it looks](#how-it-looks) - have a look at it
 2. [Quick Start](#quick-start) - try it on your systems
 3. [How it works](#how-it-works) - high level diagram of how it works
-4. [Methods](#methods) - implementation and algorithm
+4. [Methods](#methods) - implementation details
+5. [Future Works](#future-works) - milestone for this project
 5. [Reference](#reference) - documents refered in development
 
 ## How it looks
@@ -14,7 +15,13 @@ The following animated image, shows the main dashboard.
 ![apparence](https://user-images.githubusercontent.com/12826250/50955792-f9fa0a80-14f4-11e9-8dcc-d3db35c39582.gif)
 
 ## Quick Start
+
 ### Auto install script
+* Copy the command and paste in your terminal console
+```shell
+sh -c "$(wget https://raw.githubusercontent.com/jackyhuang85/expert-doodle/master/install.sh -O -)"
+```
+
 
 ### Manual Install
 1. Install packages
@@ -24,13 +31,69 @@ The following animated image, shows the main dashboard.
         * `$ conda install -c conda-forge pyopencl`
     * gputools 
         * `$ pip install gputools`
-
+2. Clone this repository
+    * `$ git clone https://github.com/jackyhuang85/expert-doodle.git`
+3. Enter the directory and run Python script
+    * `$ cd expert-doodle/src`
+    * `$ python main.py`
 
 ## How it works
+Expert-Doodle is a simply, elegant, real-time image processing demostration side-work.
 
-## Run
-`$ python main.py`
+![1](https://user-images.githubusercontent.com/12826250/50963827-c032ff00-1508-11e9-802a-8fa901f54845.png)
+```
+├── README.md
+├── example
+├── requirement.txt
+└── src
+    ├── camera.py
+    ├── controller.py
+    ├── filters.py
+    ├── main.py
+    ├── test_filter.py
+    └── views.py
+```
+| Part   	| Description 	| File 	|
+|------------	|:------------	|------	|
+| **Views**      	|This Python GUI app is implemented with PyQt5 library.	It describes the appearance and layout where the output frame is displayed.|src/views.py      	|
+| **Controller** 	|Handle events triggered by user interacting, camera frame processing.             	| src/controller.py     	|
+| **Camera**     	|Declare methods handling raw data captured by camera device.             	| src/camera.py     	|
+| **Filters**    	|Define image processing filter functions.             	|src/filters.py      	|
+
+
+## Methods
+### Filters
+We implement some kind of fundamental image processing methods to provide basic effect on image. 
+Including **gray scale**, **blur**, **sobel**, which are learnt in our DSP course. Also, we've searched and implemented some other filters, like **sharpen**, **Canny edge**, **power**, **enhance**, etc.
+
+### Performance
+Initially, all computations are done in CPU (no OpenCL supported), then FPS <span style='color: red'>got only 10% </span>compared to the present version.
+
+Due to heavy burst on **matrix computation**, we addressed the problem with OpenCL library that enables hardware acceleration(GPU). 
+
+In addition, both **sharpen** and **blur** involve [Gaussian kernel], **we forsake the built-in [gaussian filter function provided by SciPy]**, which causes the low performance. Instead, we design the gauss2D function to generate the kernel.
+
+The following table shows how much performance improves after optimization.
+|          |Before  |After  |
+|--------  |--------|-------|
+|Gray Scale|10      |26     |
+|Invert    |12     |28     |
+|Blur      |0.1      |16     |
+|Edge Detect|0.7      |18     |
+
+## Future Works
+
+- [x] Linux support
+- [x] OpenCL support
+- [x] Mac OS support
+- [ ] Windows support (testing)
+- [ ] Improve performance
+- [ ] Live streaming output on Youtube
 
 ## Reference
-* Doc.: [PyOpenCL](https://documen.tician.de/pyopencl/)
-* Github: [maweigert/gputools](https://github.com/maweigert/gputools)
+
+* [PyOpenCL](https://documen.tician.de/pyopencl/)
+* [maweigert/gputools](https://github.com/maweigert/gputools)
+
+[Gaussian kernel]:https://en.wikipedia.org/wiki/Gaussian_blur
+[gaussian filter function provided by SciPy]:https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html
