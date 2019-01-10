@@ -74,11 +74,12 @@ Due to heavy burst on **matrix computation**, we addressed the problem with Open
 In addition, both **sharpen** and **blur** involve [Gaussian kernel], **we forsake the built-in [gaussian filter function provided by SciPy]**, which causes the low performance. Instead, we design the gauss2D function to generate the kernel.
 
 The following table shows how much performance improves after optimization.
-|          |Before  |After  |
-|--------  |--------|-------|
-|Gray Scale|10      |26     |
-|Invert    |12     |28     |
-|Blur      |0.1      |16     |
+
+|Filters    |Before   |After  |
+|---------- |---------|-------|
+|Gray Scale |10       |26     |
+|Invert     |12       |28     |
+|Blur       |0.1      |16     |
 |Edge Detect|0.7      |18     |
 
 ## Future Works
