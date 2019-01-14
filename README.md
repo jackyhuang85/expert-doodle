@@ -1,5 +1,5 @@
-# Expert-Doodle
-Expert-Doodle is **real-time image processing Python GUI application**. It's optimized by hardware acceleration that uses OpenCL, and you can run on all your systems.
+# Live stream filtering
+Live stream filtering is **real-time image processing Python GUI application**. It's optimized by hardware acceleration that uses OpenCL, and you can run on all your systems.
 
 ## Contents
 1. [How it looks](#how-it-looks) - have a look at it
@@ -12,14 +12,16 @@ Expert-Doodle is **real-time image processing Python GUI application**. It's opt
 ## How it looks
 The following animated image, shows the main dashboard.
 
-![apparence](https://user-images.githubusercontent.com/12826250/50955792-f9fa0a80-14f4-11e9-8dcc-d3db35c39582.gif)
+<img src="https://user-images.githubusercontent.com/12826250/50955792-f9fa0a80-14f4-11e9-8dcc-d3db35c39582.gif" width="800" />
+
+<!-- ![apparence](https://user-images.githubusercontent.com/12826250/50955792-f9fa0a80-14f4-11e9-8dcc-d3db35c39582.gif) -->
 
 ## Quick Start
 
 ### Auto install script
 * Copy the command and paste in your terminal console
 ```shell
-sh -c "$(wget https://raw.githubusercontent.com/jackyhuang85/expert-doodle/master/install.sh -O -)"
+sh -c "$(wget https://raw.githubusercontent.com/jackyhuang85/Live stream filtering/master/install.sh -O -)"
 ```
 
 
@@ -32,15 +34,19 @@ sh -c "$(wget https://raw.githubusercontent.com/jackyhuang85/expert-doodle/maste
     * gputools 
         * `$ pip install gputools`
 2. Clone this repository
-    * `$ git clone https://github.com/jackyhuang85/expert-doodle.git`
+    * `$ git clone https://github.com/jackyhuang85/Live stream filtering.git`
 3. Enter the directory and run Python script
-    * `$ cd expert-doodle/src`
+    * `$ cd Live stream filtering/src`
     * `$ python main.py`
 
 ## How it works
-Expert-Doodle is a simply, elegant, real-time image processing demostration side-work.
+Live stream filtering is a simply, elegant, real-time image processing demostration side-work.
 
-![1](https://user-images.githubusercontent.com/12826250/50963827-c032ff00-1508-11e9-802a-8fa901f54845.png)
+<img src="https://user-images.githubusercontent.com/12826250/50963827-c032ff00-1508-11e9-802a-8fa901f54845.png" width="550" />
+
+<!-- ![1](https://user-images.githubusercontent.com/12826250/50963827-c032ff00-1508-11e9-802a-8fa901f54845.png) -->
+
+Files:
 ```
 ├── README.md
 ├── example
@@ -63,11 +69,11 @@ Expert-Doodle is a simply, elegant, real-time image processing demostration side
 
 ## Implementation
 ### Filters
-We implement some kind of fundamental image processing methods to provide basic effect on image.
+We implement some kind of fundamental image processing methods to provide basic effect on image. Totally 8 filters for the camera view and 4 of them can be tuned by the parameters.
 
 For example, the original image is
 
-<img src="example/none.jpg" width="200" />
+<img src="example/none.jpg" width="220" />
 
 #### gray scale
 The gray scale image is calculated by 
@@ -76,7 +82,7 @@ The gray scale image is calculated by
 gray_scale = 0.299*R + 0.587*G + 0.114*B
 ```
 
-<img src="example/gray_scale.jpg" width="200" />
+<img src="example/gray_scale.jpg" width="220" />
 
 #### blur
 The image convolves with a gaussian kernel to form a blurred image with a tunable kernel size and sigma.
@@ -85,7 +91,7 @@ The image convolves with a gaussian kernel to form a blurred image with a tunabl
 blurred = convolve(image, gaussian_kernel)
 ```
 
-<img src="example/blur.jpg" width="200" />
+<img src="example/blur.jpg" width="220" />
 
 #### sharpen
 The sharpen method is done by subtracting the original image by its blurred image with a tunable *rate* to control the sharpness.
@@ -94,7 +100,7 @@ The sharpen method is done by subtracting the original image by its blurred imag
 sharpened = (1+rate) * image - rate*blurred
 ```
 
-<img src="example/sharpen.jpg" width="200" />
+<img src="example/sharpen.jpg" width="220" />
 
 #### invert
 The image is simply subtracted by the max value of the image.
@@ -103,7 +109,7 @@ The image is simply subtracted by the max value of the image.
 inverted = 255 - image
 ```
 
-<img src="example/invert.jpg" width="200" />
+<img src="example/invert.jpg" width="220" />
 
 #### power
 Each value of the image powers itself by a tunable *rate*.
@@ -112,7 +118,17 @@ Each value of the image powers itself by a tunable *rate*.
 powered = image**(2-rate)
 ```
 
-<img src="example/power.jpg" width="200" />
+<img src="example/power.jpg" width="220" />
+
+#### enhance
+The contrast and the brightness of the image can be tuned by two parameter *contrast* and *brightness*.
+
+```python
+enhanced = contrast * (image-128) + 128 + brightness
+```
+
+<img src="example/enhance.jpg" width="220" />
+
 
 #### sobel
 The sobel filter calculates the differences between a 3 by 3 kernel and get the gradient of the gray scale image.
@@ -128,7 +144,7 @@ sobel_image_x = convolve(gray_scale, sobel_matrix_x)
 sobel_image_y = convolve(gray_scale, sobel_matrix_y)
 ```
 
-<img src="example/sobel.jpg" width="200" />
+<img src="example/sobel.jpg" width="220" />
 
 #### edge detect
 This method is implemented by calculating gradient of x and y direction. Then we calculate the magnitude of the gradients.
@@ -139,7 +155,7 @@ gy = sobel_image_y
 edge = sqrt((gx**2)+(gy**2))
 ```
 
-<img src="example/edge_detect.jpg" width="200" />
+<img src="example/edge_detect.jpg" width="220" />
 
 
 ### Performance
