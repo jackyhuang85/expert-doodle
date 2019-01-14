@@ -5,7 +5,7 @@ Expert-Doodle is **real-time image processing Python GUI application**. It's opt
 1. [How it looks](#how-it-looks) - have a look at it
 2. [Quick Start](#quick-start) - try it on your systems
 3. [How it works](#how-it-works) - high level diagram of how it works
-4. [Methods](#methods) - implementation details
+4. [Implementation](#implementation) - implementation details
 5. [Future Works](#future-works) - milestone for this project
 5. [Reference](#reference) - documents refered in development
 
@@ -171,6 +171,7 @@ The following table shows how much performance improves after optimization.
 
 * [PyOpenCL](https://documen.tician.de/pyopencl/)
 * [maweigert/gputools](https://github.com/maweigert/gputools)
+* [PyQt5 Reference Guide](http://pyqt.sourceforge.net/Docs/PyQt5/)
 
 [Gaussian kernel]:https://en.wikipedia.org/wiki/Gaussian_blur
 [gaussian filter function provided by SciPy]:https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html
